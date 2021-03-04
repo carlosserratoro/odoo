@@ -2842,6 +2842,7 @@ var FieldPercentPie = AbstractField.extend({
  * - max_value: get the max_value from the field that must be present in the view
  * - edit_max_value: boolean if the max_value is editable
  * - title: title of the bar, displayed on top of the bar --> not translated,  use parameter "title" instead
+ * - show_fractional: show always the numerical progress as <number> / <number>.
  */
 var FieldProgressBar = AbstractField.extend({
     description: _lt("Progress Bar"),
@@ -2885,6 +2886,8 @@ var FieldProgressBar = AbstractField.extend({
         // /!\ this feature is disabled
         this.enableBarAsInput = false;
         this.edit_on_click = this.enableBarAsInput && this.mode === 'readonly' && !this.edit_max_value;
+
+        this.show_fractional = this.nodeOptions.show_fractional || false;
 
         this.write_mode = false;
     },
@@ -3003,8 +3006,9 @@ var FieldProgressBar = AbstractField.extend({
         this.$('.o_progressbar_complete').css('width', widthComplete + '%');
 
         if (!this.write_mode) {
-            if (max_value !== 100) {
-                this.$('.o_progressbar_value').text(utils.human_number(value) + " / " + utils.human_number(max_value));
+            if (max_value !== 100 || this.show_fractional) {
+                var original_max_value = this.recordData[this.nodeOptions.max_value];
+                this.$('.o_progressbar_value').text(utils.human_number(value) + " / " + utils.human_number(original_max_value));
             } else {
                 this.$('.o_progressbar_value').text(utils.human_number(value) + "%");
             }
